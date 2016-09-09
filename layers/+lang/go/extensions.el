@@ -6,6 +6,7 @@
 (setq go-post-extensions
   '(
     ;; post extension gos go here
+    go-guru
     go-oracle
     go-rename
     ))
@@ -31,6 +32,28 @@
           (load-file file)
           (setq found t)
           finally return found)))
+
+(defun go/init-go-guru()
+  (let ((go-path (getenv "GOPATH")))
+    (if (not go-path)
+        (spacemacs-buffer/warning
+         "GOPATH variable not found, go-guru configure skipeed.")
+      (when (load-gopath-file
+             go-path "/src/golang.org/x/tools/cmd/guru/go-guru.el")
+        (spacemacs/declare-prefix-for-mode 'go-mode "mj" "go-guru")
+        (spacemacs/set-leader-keys-for-major-mode 'go-mode
+          "jj" 'go-guru-definition ; j for jump
+          "jd" 'go-guru-describe
+          "jf" 'go-guru-freevars
+          "ji" 'go-guru-implements
+          "jc" 'go-guru-peers ; c for channel
+          "jr" 'go-guru-referrers
+          "jp" 'go-guru-pointsto
+          "js" 'go-guru-callstack ; s for stack
+          "je" 'go-guru-whicherrs ; e for error
+          "j<" 'go-guru-callers
+          "j>" 'go-guru-callees
+          "jx" 'go-guru-expand-region)))))
 
 (defun go/init-go-oracle()
   (let ((go-path (getenv "GOPATH")))
